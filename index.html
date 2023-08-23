@@ -794,7 +794,7 @@
                 <div class="col-lg-6 offset-lg-3">
     
                     <!-- Contact Form -->
-                    <form id="contactForm" data-toggle="validator" data-focus="false">
+                    <form id="contactForm" data-toggles="validator" data-focus="false">
                         <div class="form-group">
                             <input type="text" class="form-control-input" id="cname" required>
                             <label class="label-control" for="cname">Name</label>
@@ -810,7 +810,7 @@
                             <label class="label-control" for="cmessage">Your message</label>
                             <div class="help-block with-errors"></div>
                         </div>
-                        <div class="form-group checkbox">
+                        <div class="form-group checkbox d-none">
                             <input type="checkbox" id="cterms" value="Agreed-to-Terms" style="cursor: pointer;" required />
                             <label for="cterms" style="display: inline;cursor: pointer;">I have read and agree to Eventgum's stated conditions in <a href="#contact">Privacy Policy</a> and <a href="#contact">Terms Conditions</a></label>
                             <div class="help-block with-errors"></div>
@@ -950,12 +950,7 @@
             playStoreButton.addEventListener("click", playStore);
             playStoreButton2.addEventListener("click", playStore);
         });
-
-        function onSubmit(token) { 
-            document.getElementById("contactForm").submit(); 
-        }
     </script>
-    
     	
     <!-- Scripts -->
     <script src="js/jquery.min.js"></script> <!-- jQuery for Bootstrap's JavaScript plugins -->
@@ -969,5 +964,81 @@
     <script src="js/scripts.js"></script> <!-- Custom scripts -->
     <!-- Include SweetAlert CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $( "#contactForm" ).validate({
+          errorClass: 'form-control-feedback',
+          errorElement: 'div',
+          highlight: function(element) {
+            $(element).parents(".form-group").addClass("has-danger");
+          },
+          unhighlight: function(element) {
+            $(element).parents(".form-group").removeClass("has-danger");
+          },
+          rules: {
+              cname: 'required',
+              cemail: {
+                required: true,
+                email: true
+              },
+              cmessages: {
+                maxlength: 500
+              }
+          },
+          messages: {
+              name: 'Please enter your name.',
+              email: {
+                required: 'You can not leave this empty.',
+                email: 'Please enter a valid email address.'
+              },
+              comments: {
+                maxlength: 'Message length must be less than 500 character.'
+              }
+          }
+        });
+        
+        function onSubmit(token) {
+          if ($("#contactForm").valid()) {
+            var name = $("#cname").val();
+            var email = $("#cemail").val();
+            var message = $("#cmessage").val();
+            var terms = "";
+            $.ajax({
+                type: "POST",
+                url: "php/contactform-process.php",
+                data: "name=" + name + "&email=" + email + "&message=" + message + "&g-recaptcha-response=" + token, 
+                success: function(text) {
+                    // Reset form
+                    //csubmitButtonAfter();
+                    document.getElementById("contactForm").reset();
+                    if (text == "success") {
+                        //cformSuccess();
+                        // Show SweetAlert
+                        //swal("Message Sent", "Your message has been successfully sent!", "success");
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Your message has been successfully sent!',
+                            confirmButtonText: 'Ok',
+                            confirmButtonColor: '#00c9db'
+                        });
+
+
+                    } else {
+                        //cformError();
+                        //csubmitMSG(false, text);
+                        // Show SweetAlert
+                        //swal("Message Sent", "Your message has been successfully sent!", "success");
+                        Swal.fire({
+                            icon: 'error',
+                            text: text,
+                            confirmButtonText: 'Ok',
+                            confirmButtonColor: '#00c9db'
+                        });
+                    }
+                }
+            });
+          }
+        }
+    </script>
 </body>
 </html>
