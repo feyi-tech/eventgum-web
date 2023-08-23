@@ -796,17 +796,17 @@
                     <!-- Contact Form -->
                     <form id="contactForm" data-toggles="validator" data-focus="false">
                         <div class="form-group">
-                            <input type="text" class="form-control-input" id="cname" required>
+                            <input type="text" class="form-control-input" id="cname" name="cname" required>
                             <label class="label-control" for="cname">Name</label>
                             <div class="help-block with-errors"></div>
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control-input" id="cemail" required>
+                            <input type="email" class="form-control-input" id="cemail" name="cemail" required>
                             <label class="label-control" for="cemail">Email</label>
                             <div class="help-block with-errors"></div>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control-textarea" id="cmessage" required></textarea>
+                            <textarea class="form-control-textarea" id="cmessage" name="cmessage" required></textarea>
                             <label class="label-control" for="cmessage">Your message</label>
                             <div class="help-block with-errors"></div>
                         </div>
@@ -977,45 +977,87 @@
             $(element).parents(".form-group").removeClass("has-danger");
           },
           rules: {
-              cname: 'required',
+              cname: {
+                required: true,
+                maxlength: 60
+              },
               cemail: {
                 required: true,
-                email: true
+                email: true,
+                maxlength: 60
               },
-              cmessages: {
+              cmessage: {
                 maxlength: 500
               }
           },
           messages: {
-              name: 'Please enter your name.',
-              email: {
-                required: 'You can not leave this empty.',
-                email: 'Please enter a valid email address.'
+              cname: {
+                required: 'Please enter your name.',
+                maxlength: 'Name must not be more than 60 characters.'
               },
-              comments: {
-                maxlength: 'Message length must be less than 500 character.'
+              cemail: {
+                required: 'You can not leave this empty.',
+                email: 'Please enter a valid email address.',
+                maxlength: 'Email must not be more than 60 characters.'
+              },
+              cmessage: {
+                maxlength: 'Message length must not be more than 500 characters.'
               }
           }
         });
+
+        function csubmitButtonBefore() {
+            document.getElementById("submitMsg").setAttribute("disabled", "1");
+            document.getElementById("submitMsg").setAttribute("style", "font-style:italic;cursor:not-allowed;opacity:0.4;");
+            document.getElementById("submitMsg").innerText = "PLEASE WAIT...";
+        }
+        function csubmitButtonAfter() {
+            document.getElementById("submitMsg").removeAttribute("disabled");
+            document.getElementById("submitMsg").setAttribute("style", "font-style:normal;cursor:pointer;opacity:1;");
+            document.getElementById("submitMsg").innerText = "SUBMIT MESSAGE";
+        }
+
+        function cformSuccess() {
+            $("#contactForm")[0].reset();
+            csubmitMSG(true, "Message Submitted!");
+            $("input").removeClass('notEmpty'); // resets the field label after submission
+            $("textarea").removeClass('notEmpty'); // resets the field label after submission
+        }
+
+        function cformError() {
+            $("#contactForm").removeClass().addClass('shake animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+                $(this).removeClass();
+            });
+        }
+
+        function csubmitMSG(valid, msg) {
+            if (valid) {
+                var msgClasses = "h3 text-center tada animated";
+            } else {
+                var msgClasses = "h3 text-center";
+            }
+            $("#cmsgSubmit").removeClass().addClass(msgClasses).text(msg);
+        }
         
         function onSubmit(token) {
           if ($("#contactForm").valid()) {
+            csubmitButtonBefore();
+
             var name = $("#cname").val();
             var email = $("#cemail").val();
             var message = $("#cmessage").val();
-            var terms = "";
+
             $.ajax({
                 type: "POST",
                 url: "php/contactform-process.php",
                 data: "name=" + name + "&email=" + email + "&message=" + message + "&g-recaptcha-response=" + token, 
                 success: function(text) {
                     // Reset form
-                    //csubmitButtonAfter();
+                    csubmitButtonAfter();
                     document.getElementById("contactForm").reset();
                     if (text == "success") {
                         //cformSuccess();
                         // Show SweetAlert
-                        //swal("Message Sent", "Your message has been successfully sent!", "success");
                         Swal.fire({
                             icon: 'success',
                             text: 'Your message has been successfully sent!',
@@ -1025,10 +1067,9 @@
 
 
                     } else {
-                        //cformError();
-                        //csubmitMSG(false, text);
+                        cformError();
+                        csubmitMSG(false, text);
                         // Show SweetAlert
-                        //swal("Message Sent", "Your message has been successfully sent!", "success");
                         Swal.fire({
                             icon: 'error',
                             text: text,
