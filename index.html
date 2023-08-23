@@ -27,6 +27,7 @@
     <link href="css/swiper.css" rel="stylesheet">
 	<link href="css/magnific-popup.css" rel="stylesheet">
 	<link href="css/styles.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	
 	<!-- Favicon  -->
     <link rel="icon" href="favicon/favicon.png">
@@ -119,7 +120,7 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="text-container">
-                            <h1>CREATE TICKETS <br>FOR YOUR <span id="js-rotating">PARTIES, FAN CLUB, LIVE SHOWS, REUNION, LECTURES, WEDDINGS</span></h1>
+                            <h1>CREATE TICKETS <br>FOR YOUR <span id="js-rotating">PARTIES, FAN CLUB, CONCERTS, REUNION, LECTURES, WEDDINGS</span></h1>
                             <p class="p-large">Eventgum is the go-to app for bringing your events together. It helps you manage tickets sales for your events, along with offline ticket verification. Download it today!</p>
                             <a class="btn-solid-lg page-scroll" href="#your-link" id="appStoreButton"><i class="fab fa-apple"></i>APP STORE</a>
                             <a class="btn-solid-lg page-scroll" href="#your-link" id="playStoreButton"><i class="fab fa-google-play"></i>PLAY STORE</a>
@@ -815,7 +816,8 @@
                             <div class="help-block with-errors"></div>
                         </div>
                         <div class="form-group">
-                            <button id="submitMsg" type="submit" class="form-control-submit-button">SUBMIT MESSAGE</button>
+                            <button id="submitMsg" type="submit" class="form-control-submit-button g-recaptcha" 
+                            data-sitekey="6LdLM8knAAAAAOJBEe15Uoi9QxnC9Bs8Gu3sQjIk" data-callback='onSubmit' data-action='submit'>SUBMIT MESSAGE</button>
                         </div>
                         <div class="form-message">
                             <div id="cmsgSubmit" class="h3 text-center hidden"></div>
@@ -948,6 +950,10 @@
             playStoreButton.addEventListener("click", playStore);
             playStoreButton2.addEventListener("click", playStore);
         });
+
+        function onSubmit(token) { 
+            document.getElementById("contactForm").submit(); 
+        }
     </script>
     
     	

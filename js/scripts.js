@@ -267,6 +267,7 @@
     function csubmitForm() {
         csubmitButtonBefore();
         
+        /*
         setTimeout(function() {
             // Reset form
             csubmitButtonAfter();
@@ -280,10 +281,10 @@
                 confirmButtonText: 'Ok',
                 confirmButtonColor: '#00c9db'
             });
-        }, 1500);
+        }, 1500);*/
 
         // initiate variables with form content
-        /*
+        
 		var name = $("#cname").val();
 		var email = $("#cemail").val();
         var message = $("#cmessage").val();
@@ -293,14 +294,35 @@
             url: "php/contactform-process.php",
             data: "name=" + name + "&email=" + email + "&message=" + message + "&terms=" + terms, 
             success: function(text) {
+                // Reset form
+                csubmitButtonAfter();
+                document.getElementById("contactForm").reset();
                 if (text == "success") {
                     cformSuccess();
+                    // Show SweetAlert
+                    //swal("Message Sent", "Your message has been successfully sent!", "success");
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Your message has been successfully sent!',
+                        confirmButtonText: 'Ok',
+                        confirmButtonColor: '#00c9db'
+                    });
+
+
                 } else {
                     cformError();
                     csubmitMSG(false, text);
+                    // Show SweetAlert
+                    //swal("Message Sent", "Your message has been successfully sent!", "success");
+                    Swal.fire({
+                        icon: 'error',
+                        text: text,
+                        confirmButtonText: 'Ok',
+                        confirmButtonColor: '#00c9db'
+                    });
                 }
             }
-        });*/
+        });
 	}
 
     function cformSuccess() {
